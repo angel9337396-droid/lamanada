@@ -8,14 +8,14 @@ const highScoreReaction = document.getElementById("high-score-reaction");
 const highScoreVideo = highScoreReaction.querySelector("video");
 const REACTION_CHANCE = 0.5;
 const scoreBackgrounds = [
-  { id: "score-bg-1", name: "Fondo 1", image: "fondos/marcador-fondo-1.webp", preview: "fondos/marcador-fondo-1-mini.webp" },
-  { id: "score-bg-2", name: "Fondo 2", image: "fondos/marcador-fondo-2.webp", preview: "fondos/marcador-fondo-2-mini.webp" },
-  { id: "score-bg-3", name: "Fondo 3", image: "fondos/marcador-fondo-3.webp", preview: "fondos/marcador-fondo-3-mini.webp" },
-  { id: "score-bg-4", name: "Fondo 4", image: "fondos/marcador-fondo-4.webp", preview: "fondos/marcador-fondo-4-mini.webp" },
-  { id: "score-bg-5", name: "Fondo 5", image: "fondos/marcador-fondo-5.webp", preview: "fondos/marcador-fondo-5-mini.webp" },
-  { id: "score-bg-6", name: "Fondo 6", image: "fondos/marcador-fondo-6.webp", preview: "fondos/marcador-fondo-6-mini.webp" },
-  { id: "score-bg-7", name: "Fondo 7", image: "fondos/marcador-fondo-7.webp", preview: "fondos/marcador-fondo-7-mini.webp" },
-  { id: "score-bg-8", name: "Fondo 8", image: "fondos/marcador-fondo-8.webp", preview: "fondos/marcador-fondo-8-mini.webp" }
+  { id: "score-bg-1", name: "Fondo 1", image: "marcador-fondo-1.webp", preview: "marcador-fondo-1-mini.webp" },
+  { id: "score-bg-2", name: "Fondo 2", image: "marcador-fondo-2.webp", preview: "marcador-fondo-2-mini.webp" },
+  { id: "score-bg-3", name: "Fondo 3", image: "marcador-fondo-3.webp", preview: "marcador-fondo-3-mini.webp" },
+  { id: "score-bg-4", name: "Fondo 4", image: "marcador-fondo-4.webp", preview: "marcador-fondo-4-mini.webp" },
+  { id: "score-bg-5", name: "Fondo 5", image: "marcador-fondo-5.webp", preview: "marcador-fondo-5-mini.webp" },
+  { id: "score-bg-6", name: "Fondo 6", image: "marcador-fondo-6.webp", preview: "marcador-fondo-6-mini.webp" },
+  { id: "score-bg-7", name: "Fondo 7", image: "marcador-fondo-7.webp", preview: "marcador-fondo-7-mini.webp" },
+  { id: "score-bg-8", name: "Fondo 8", image: "marcador-fondo-8.webp", preview: "marcador-fondo-8-mini.webp" }
 ];
 const initialState = {
   setup: { names: ["Equipo 1", "Equipo 2"], target: 150 },
@@ -214,6 +214,9 @@ function renderSetup() {
         <button class="primary-button" type="submit">Iniciar partida <span aria-hidden="true">→</span></button>
       </form>
     </section>
+    <footer class="gedelo-footer">
+      <img src="gedelo-logo.png" alt="Gedelo">
+    </footer>
     ${renderBackgroundPicker()}`;
   if (backgroundPickerOpen) root.querySelector(".background-picker .dialog-close").focus();
 }
@@ -232,6 +235,9 @@ function renderTeam(team, index, game) {
         <div class="progress-fill" style="--progress:${progress}%"></div>
       </div>
       <p class="remaining">${remaining === 0 ? "<strong>¡Meta alcanzada!</strong>" : `Faltan <strong>${remaining}</strong>`}</p>
+      <button type="button" class="team-add-button" data-action="open-manual" data-team="${index}" aria-label="Sumar puntos a ${escapeHtml(team.name)}" ${game.winner !== null ? "disabled" : ""}>
+        <span aria-hidden="true">＋</span>
+      </button>
     </section>`;
 }
 
@@ -305,20 +311,9 @@ function renderGame() {
         ${renderRoundHistory(game)}
       </section>
       <div class="score-bottom">
-        <div class="quick-controls">
-          ${game.teams.map((team, index) => `
-            <button type="button" class="quick-add-button" data-action="quick-add" data-team="${index}" aria-label="Agregar 30 puntos a ${escapeHtml(team.name)}" ${game.winner !== null ? "disabled" : ""}>
-              <span>+30</span><small>${escapeHtml(team.name)}</small>
-            </button>`).join("")}
-        </div>
-        <div class="bottom-actions">
-          <button class="manual-entry-button" type="button" data-action="open-manual" ${game.winner !== null ? "disabled" : ""}>
-            <span aria-hidden="true">＋</span> Otros puntos
-          </button>
-          <button class="undo-button" type="button" data-action="undo" ${game.history.length === 0 ? "disabled" : ""}>
-            <span aria-hidden="true">↶</span> Deshacer
-          </button>
-        </div>
+        <button class="undo-button" type="button" data-action="undo" ${game.history.length === 0 ? "disabled" : ""}>
+          <span aria-hidden="true">↶</span> Deshacer
+        </button>
       </div>
       <p class="game-footer">Se guarda automáticamente en este dispositivo</p>
     </section>
@@ -329,11 +324,7 @@ function renderGame() {
           <p class="eyebrow">Registro manual</p>
           <h2 id="manual-title">Anotar puntos</h2>
           <div class="field">
-            <span class="form-label">¿Qué equipo ganó la mano?</span>
-            <div class="team-choice" role="group" aria-label="Equipo ganador de la mano">
-              ${game.teams.map((team, index) => `
-                <button type="button" class="team-select" data-action="select-team" data-team="${index}" aria-pressed="${selectedTeam === index}">${escapeHtml(team.name)}</button>`).join("")}
-            </div>
+            <p class="form-label">Se sumarán a <strong>${escapeHtml(game.teams[selectedTeam].name)}</strong></p>
           </div>
           <div class="field">
             <label class="form-label" for="points-input">Puntos obtenidos</label>
@@ -508,7 +499,6 @@ root.addEventListener("click", (event) => {
   }
 
   const action = button.dataset.action;
-  if (action === "quick-add") addPoints(Number(button.dataset.team), 30);
   if (action === "open-backgrounds") {
     backgroundPickerOpen = true;
     render();
@@ -527,18 +517,15 @@ root.addEventListener("click", (event) => {
     showToast(`Fondo del marcador: ${selected.name}.`);
   }
   if (action === "open-manual") {
+    const teamIndex = Number(button.dataset.team);
+    if (![0, 1].includes(teamIndex)) return;
+    selectedTeam = teamIndex;
     manualEntryOpen = true;
     render();
   }
   if (action === "close-manual") {
     manualEntryOpen = false;
     render();
-  }
-  if (action === "select-team") {
-    selectedTeam = Number(button.dataset.team);
-    root.querySelectorAll(".team-select").forEach((choice) => {
-      choice.setAttribute("aria-pressed", String(Number(choice.dataset.team) === selectedTeam));
-    });
   }
   if (action === "undo") undoLast();
   if (action === "remove-round") removeRound(Number(button.dataset.index));
